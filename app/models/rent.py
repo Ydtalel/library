@@ -12,5 +12,5 @@ class Rent(Base):
     rent_date = Column(Date, nullable=False)
     return_date = Column(Date, nullable=True)
 
-    book = relationship("Book")
+    book = relationship("Book", back_populates="rents")
     reader = relationship("Reader", back_populates="rents")

@@ -1,7 +1,13 @@
-from sqlalchemy import Column, Integer, String, Text, Date
+from sqlalchemy import Column, Integer, String, Text, Date, Table, ForeignKey
 from sqlalchemy.orm import relationship
-
 from app.database import Base
+
+book_author_association = Table(
+    "book_author",
+    Base.metadata,
+    Column("book_id", ForeignKey("books.id"), primary_key=True),
+    Column("author_id", ForeignKey("authors.id"), primary_key=True),
+)
 
 
 class Author(Base):
@@ -9,7 +15,8 @@ class Author(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    biography = Column(String, nullable=True)
+    biography = Column(Text, nullable=True)
     birth_date = Column(Date, nullable=True)
 
-    books = relationship("Book", back_populates="authors")
+    books = relationship("Book", secondary=book_author_association,
+                         back_populates="authors")
