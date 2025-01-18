@@ -1,35 +1,30 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
+from app.models import Author
 from app.models.book import Book
-from app.dependencies import get_current_user, require_admin
-from pydantic import BaseModel
-from datetime import date
+from app.dependencies import require_admin
+from app.schemas.book import BookResponse, BookCreate
 
 router = APIRouter()
 
 
-class BookCreate(BaseModel):
-    title: str
-    description: str
-    published_date: date
-    available_copies: int
-
-
-class BookResponse(BaseModel):
-    id: int
-    title: str
-    description: str
-    published_date: date
-    available_copies: int
-
-    class Config:
-        from_attributes = True
-
-
-@router.post("/", response_model=BookResponse, dependencies=[Depends(require_admin)])
+@router.post("/", response_model=BookResponse,
+             dependencies=[Depends(require_admin)])
 def create_book(book: BookCreate, db: Session = Depends(get_db)):
-    new_book = Book(**book.dict())
+    authors = db.query(Author).filter(Author.id.in_(book.author_ids)).all()
+    if not authors or len(authors) != len(book.author_ids):
+        raise HTTPException(status_code=404,
+                            detail="One or more authors not found")
+
+    new_book = Book(
+        title=book.title,
+        description=book.description,
+        published_date=book.published_date,
+        available_copies=book.available_copies
+    )
+    new_book.authors = authors
+
     db.add(new_book)
     db.commit()
     db.refresh(new_book)
@@ -50,7 +45,8 @@ def get_book(book_id: int, db: Session = Depends(get_db)):
     return book
 
 
-@router.put("/{book_id}", response_model=BookResponse, dependencies=[Depends(require_admin)])
+@router.put("/{book_id}", response_model=BookResponse,
+            dependencies=[Depends(require_admin)])
 def update_book(book_id: int, book: BookCreate, db: Session = Depends(get_db)):
     existing_book = db.query(Book).filter(Book.id == book_id).first()
     if not existing_book:
