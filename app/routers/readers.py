@@ -12,9 +12,7 @@ router = APIRouter()
 @router.get("/", response_model=list[ReaderResponse])
 def get_all_readers(db: Session = Depends(get_db),
                     current_user: Reader = Depends(require_admin)):
-    """
-    Возвращает список всех читателей. Только для администратора.
-    """
+    """Возвращает список всех читателей"""
     readers = db.query(Reader).all()
     return readers
 
@@ -25,9 +23,7 @@ def update_reader_info(
         db: Session = Depends(get_db),
         current_user: Reader = Depends(get_current_user),
 ):
-    """
-    Обновляет информацию о текущем читателе.
-    """
+    """Обновляет информацию о текущем читателе"""
     current_user.name = reader_update.name
     current_user.email = reader_update.email
 

@@ -12,6 +12,7 @@ router = APIRouter()
 @router.post("/", response_model=BookResponse,
              dependencies=[Depends(require_admin)])
 def create_book(book: BookCreate, db: Session = Depends(get_db)):
+    """Создает новую книгу с заданными авторами и данными"""
     authors = db.query(Author).filter(Author.id.in_(book.author_ids)).all()
     if not authors or len(authors) != len(book.author_ids):
         raise HTTPException(status_code=404,
@@ -39,9 +40,7 @@ def list_books(
     title: str = Query(None),
     author_name: str = Query(None),
 ):
-    """
-    Возвращает список книг с поддержкой пагинации и фильтрации.
-    """
+    """Возвращает список книг с поддержкой пагинации и фильтрации"""
     query = db.query(Book)
     if title:
         query = query.filter(Book.title.ilike(f"%{title}%"))
@@ -55,6 +54,7 @@ def list_books(
 
 @router.get("/{book_id}", response_model=BookResponse)
 def get_book(book_id: int, db: Session = Depends(get_db)):
+    """Возвращает информацию о конкретной книге по её ID"""
     book = db.query(Book).filter(Book.id == book_id).first()
     if book is None:
         raise HTTPException(status_code=404, detail="Book not found")
@@ -64,6 +64,7 @@ def get_book(book_id: int, db: Session = Depends(get_db)):
 @router.put("/{book_id}", response_model=BookResponse,
             dependencies=[Depends(require_admin)])
 def update_book(book_id: int, book: BookCreate, db: Session = Depends(get_db)):
+    """Обновляет данные книги по её ID"""
     existing_book = db.query(Book).filter(Book.id == book_id).first()
     if not existing_book:
         raise HTTPException(status_code=404, detail="Book not found")
@@ -76,6 +77,7 @@ def update_book(book_id: int, book: BookCreate, db: Session = Depends(get_db)):
 
 @router.delete("/{book_id}", dependencies=[Depends(require_admin)])
 def delete_book(book_id: int, db: Session = Depends(get_db)):
+    """Удаляет книгу по её ID"""
     book = db.query(Book).filter(Book.id == book_id).first()
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")

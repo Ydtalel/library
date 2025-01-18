@@ -5,6 +5,8 @@ from app.database import Base
 
 
 class Reader(Base):
+    """Модель читателя"""
+
     __tablename__ = "readers"
 
     id = Column(Integer, primary_key=True, index=True)

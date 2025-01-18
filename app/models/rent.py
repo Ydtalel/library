@@ -4,6 +4,8 @@ from app.database import Base
 
 
 class Rent(Base):
+    """Модель аренды книги"""
+
     __tablename__ = "rents"
 
     id = Column(Integer, primary_key=True, index=True)

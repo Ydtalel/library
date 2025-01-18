@@ -5,6 +5,8 @@ from app.models.author import book_author_association
 
 
 class Book(Base):
+    """Модель книги"""
+
     __tablename__ = "books"
 
     id = Column(Integer, primary_key=True, index=True)

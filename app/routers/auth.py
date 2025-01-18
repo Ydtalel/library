@@ -12,6 +12,7 @@ router = APIRouter()
 
 @router.post("/register")
 def register_user(request: RegisterRequest, db: Session = Depends(get_db)):
+    """Регистрирует нового пользователя"""
     user = db.query(Reader).filter(Reader.name == request.name).first()
     if user:
         raise HTTPException(status_code=400, detail="name already exists")
@@ -31,6 +32,7 @@ def register_user(request: RegisterRequest, db: Session = Depends(get_db)):
 
 @router.post("/login")
 def login_user(request: LoginRequest, db: Session = Depends(get_db)):
+    """Выполняет авторизацию пользователя"""
     user = db.query(Reader).filter(Reader.name == request.name).first()
     if not user or not verify_password(request.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")

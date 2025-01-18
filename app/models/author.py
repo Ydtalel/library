@@ -11,6 +11,8 @@ book_author_association = Table(
 
 
 class Author(Base):
+    """Модель автора, использует промежуточную таблицу для связи с книгами"""
+
     __tablename__ = "authors"
 
     id = Column(Integer, primary_key=True, index=True)

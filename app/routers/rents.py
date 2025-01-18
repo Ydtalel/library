@@ -17,6 +17,7 @@ def rent_book(
         db: Session = Depends(get_db),
         current_user: Reader = Depends(get_current_user)
 ):
+    """Осуществляет аренду книги для текущего пользователя"""
     book = db.query(Book).filter(Book.id == rent_request.book_id).first()
     if not book:
         logger.error(f"Rent failed: Book ID {rent_request.book_id} not found")
@@ -58,6 +59,7 @@ def return_book(
         db: Session = Depends(get_db),
         current_user: Reader = Depends(get_current_user)
 ):
+    """Осуществляет возврат книги для текущего пользователя"""
     rent = db.query(Rent).filter(
         Rent.book_id == return_request.book_id,
         Rent.reader_id == current_user.id,

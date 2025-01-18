@@ -11,6 +11,7 @@ router = APIRouter()
 @router.post("/", response_model=AuthorResponse,
              dependencies=[Depends(require_admin)])
 def create_author(author: AuthorCreate, db: Session = Depends(get_db)):
+    """Создает нового автора и сохраняет его в базе данных"""
     new_author = Author(**author.dict())
     db.add(new_author)
     db.commit()
@@ -25,9 +26,7 @@ def list_authors(
     limit: int = Query(10, ge=1, le=100),
     name: str = Query(None),
 ):
-    """
-    Возвращает список авторов с поддержкой пагинации и фильтрации.
-    """
+    """Возвращает список авторов с поддержкой пагинации и фильтрации"""
     query = db.query(Author)
     if name:
         query = query.filter(Author.name.ilike(f"%{name}%"))
@@ -37,6 +36,7 @@ def list_authors(
 
 @router.get("/{author_id}", response_model=AuthorResponse)
 def get_author(author_id: int, db: Session = Depends(get_db)):
+    """Возвращает информацию о конкретном авторе по его ID"""
     author = db.query(Author).filter(Author.id == author_id).first()
     if author is None:
         raise HTTPException(status_code=404, detail="Author not found")
@@ -47,6 +47,7 @@ def get_author(author_id: int, db: Session = Depends(get_db)):
             dependencies=[Depends(require_admin)])
 def update_author(author_id: int, author: AuthorCreate,
                   db: Session = Depends(get_db)):
+    """Обновляет данные автора по его ID"""
     existing_author = db.query(Author).filter(Author.id == author_id).first()
     if not existing_author:
         raise HTTPException(status_code=404, detail="Author not found")
@@ -59,6 +60,7 @@ def update_author(author_id: int, author: AuthorCreate,
 
 @router.delete("/{author_id}", dependencies=[Depends(require_admin)])
 def delete_author(author_id: int, db: Session = Depends(get_db)):
+    """Удаляет автора по его ID"""
     author = db.query(Author).filter(Author.id == author_id).first()
     if not author:
         raise HTTPException(status_code=404, detail="Author not found")

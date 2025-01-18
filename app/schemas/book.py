@@ -3,6 +3,8 @@ from datetime import date
 
 
 class BookBase(BaseModel):
+    """Базовая модель данных для книги"""
+
     title: str
     description: str
     published_date: date
@@ -13,10 +15,14 @@ class BookBase(BaseModel):
 
 
 class BookCreate(BookBase):
+    """Модель для создания книги"""
+
     author_ids: list[int]
 
 
 class AuthorResponse(BaseModel):
+    """Ответ с информацией об авторе"""
+
     id: int
     name: str
 
@@ -25,5 +31,7 @@ class AuthorResponse(BaseModel):
 
 
 class BookResponse(BookBase):
+    """Ответ с информацией о книге"""
+
     id: int
     authors: list[AuthorResponse]
