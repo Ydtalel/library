@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Author
@@ -32,8 +32,27 @@ def create_book(book: BookCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=list[BookResponse])
-def list_books(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    books = db.query(Book).offset(skip).limit(limit).all()
+def list_books(
+    db: Session = Depends(get_db),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    title: str = Query(None),
+    genre: str = Query(None),
+    author_name: str = Query(None),
+):
+    """
+    Возвращает список книг с поддержкой пагинации и фильтрации.
+    """
+    query = db.query(Book)
+    if title:
+        query = query.filter(Book.title.ilike(f"%{title}%"))
+    if genre:
+        query = query.filter(Book.genre.ilike(f"%{genre}%"))
+    if author_name:
+        query = query.join(Book.authors).filter(
+            Book.authors.any(name=author_name))
+
+    books = query.offset(skip).limit(limit).all()
     return books
 
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.author import Author
@@ -19,9 +19,19 @@ def create_author(author: AuthorCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=list[AuthorResponse])
-def list_authors(skip: int = 0, limit: int = 10,
-                 db: Session = Depends(get_db)):
-    authors = db.query(Author).offset(skip).limit(limit).all()
+def list_authors(
+    db: Session = Depends(get_db),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    name: str = Query(None),
+):
+    """
+    Возвращает список авторов с поддержкой пагинации и фильтрации.
+    """
+    query = db.query(Author)
+    if name:
+        query = query.filter(Author.name.ilike(f"%{name}%"))
+    authors = query.offset(skip).limit(limit).all()
     return authors
 
 
