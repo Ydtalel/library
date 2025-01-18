@@ -1,0 +1,10 @@
+2025-01-18 15:22:01,984 - INFO - Book ID 3 rented by User ID 5
+2025-01-18 15:22:16,559 - INFO - Book ID 3 rented by User ID 5
+2025-01-18 15:22:19,498 - INFO - Book ID 3 rented by User ID 5
+2025-01-18 15:22:22,370 - INFO - Book ID 3 rented by User ID 5
+2025-01-18 15:22:23,702 - ERROR - Rent failed: User ID 5 exceeded the limit
+2025-01-18 15:22:43,750 - INFO - Book ID 3 returned by User ID 5
+2025-01-18 15:22:48,835 - INFO - Book ID 3 returned by User ID 5
+2025-01-18 15:22:50,125 - INFO - Book ID 3 returned by User ID 5
+2025-01-18 15:22:50,988 - INFO - Book ID 3 returned by User ID 5
+2025-01-18 15:22:52,112 - ERROR - Return failed: No active rent for Book ID 3

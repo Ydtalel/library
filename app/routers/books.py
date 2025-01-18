@@ -37,7 +37,6 @@ def list_books(
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
     title: str = Query(None),
-    genre: str = Query(None),
     author_name: str = Query(None),
 ):
     """
@@ -46,11 +45,9 @@ def list_books(
     query = db.query(Book)
     if title:
         query = query.filter(Book.title.ilike(f"%{title}%"))
-    if genre:
-        query = query.filter(Book.genre.ilike(f"%{genre}%"))
     if author_name:
         query = query.join(Book.authors).filter(
-            Book.authors.any(name=author_name))
+            Author.name.ilike(f"%{author_name}%"))
 
     books = query.offset(skip).limit(limit).all()
     return books

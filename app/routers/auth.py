@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.reader import Reader
 from app.schemas.auth import RegisterRequest, LoginRequest
-from app.utils import hash_password, verify_password, create_access_token
+from app.utils.utils import hash_password, verify_password, create_access_token
+
 
 router = APIRouter()
 
